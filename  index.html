@@ -1,0 +1,531 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secret Space 🤫✨</title>
+    
+    <!-- Open Graph Social Media Meta Tags with Messi Cover -->
+    <meta property="og:title" content="Secret Space 🤫✨">
+    <meta property="og:description" content="Enth vennlum paranjo, aara paranje nne ariyan pattula 🙂‍↕️">
+    <meta property="og:image" content="https://fotos.perfil.com/2026/10/07/trim/1140/641/lionel-messi-last-game-argentina-2343069.jpg">
+    <meta property="twitter:card" content="summary_large_image">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: #0f172a; color: #f8fafc; 
+            display: flex; justify-content: center; align-items: flex-start; 
+            min-height: 100vh; padding: 15px; overflow-x: hidden; position: relative;
+        }
+
+        .glow-orb-1, .glow-orb-2 { position: fixed; border-radius: 50%; filter: blur(90px); z-index: -1; opacity: 0.6; }
+        .glow-orb-1 { width: 300px; height: 300px; background: #ec4899; top: -50px; left: -50px; animation: float 8s infinite alternate ease-in-out; }
+        .glow-orb-2 { width: 400px; height: 400px; background: #8b5cf6; bottom: -100px; right: -100px; animation: float 10s infinite alternate-reverse ease-in-out; }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(40px) scale(1.1); } }
+
+        .container { 
+            background: rgba(30, 41, 59, 0.45); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12); width: 100%; max-width: 500px; 
+            padding: 30px 20px; border-radius: 28px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
+            text-align: center; margin-top: 2vh; margin-bottom: 3vh; position: relative; z-index: 10;
+        }
+
+        .screen { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .screen.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 30px; margin-bottom: 8px; background: linear-gradient(to right, #f472b6, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;}
+        h2 { font-size: 15px; margin-bottom: 25px; color: #cbd5e1; font-weight: 400; line-height: 1.5; }
+        
+        .warning-text { font-size: 13px; color: #34d399; background: rgba(52, 211, 153, 0.1); padding: 12px; border-radius: 12px; margin-bottom: 25px; font-weight: 600; border: 1px solid rgba(52, 211, 153, 0.2); }
+        
+        input, textarea { 
+            width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(0, 0, 0, 0.35); color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; outline: none; font-size: 15px; transition: 0.3s; 
+        }
+        input:focus, textarea:focus { border-color: #f472b6; background: rgba(0, 0, 0, 0.55); box-shadow: 0 0 15px rgba(244, 114, 182, 0.25); }
+        textarea { height: 100px; resize: none; }
+        
+        .question-label { display: block; text-align: left; margin-bottom: 8px; font-size: 14px; color: #e2e8f0; font-weight: 600; line-height: 1.5; }
+        
+        .rating-box { display: flex; justify-content: flex-start; gap: 8px; margin-bottom: 25px; font-size: 35px; cursor: pointer; }
+        .star { color: rgba(255, 255, 255, 0.2); transition: 0.2s; }
+        .star.active { color: #fcd34d; filter: drop-shadow(0 0 8px rgba(252, 211, 77, 0.6)); }
+        
+        button { 
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #ec4899, #8b5cf6); 
+            color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; 
+            transition: 0.2s; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+        button:active { transform: scale(0.96); }
+        
+        .promo-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; margin-top: 25px; }
+        .promo-box p { font-size: 14px; color: #e2e8f0; margin-bottom: 15px; line-height: 1.5; font-weight: 500;}
+        
+        .insta-btn, .wa-btn { 
+            display: block; text-decoration: none; padding: 14px 20px; border-radius: 14px;
+            color: white; font-weight: 700; font-size: 15px; transition: 0.2s; margin-bottom: 12px;
+        }
+        .insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3); }
+        .wa-btn { background: linear-gradient(45deg, #25D366, #128C7E); box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
+        .insta-btn:active, .wa-btn:active { transform: scale(0.96); }
+
+        .troll-btn { background: transparent; border: 1px solid #fcd34d; color: #fcd34d; margin-top: 15px; box-shadow: none;}
+        .troll-btn:active { background: rgba(252, 211, 77, 0.1); }
+
+        .submit-review-btn { background: linear-gradient(135deg, #3b82f6, #1d4ed8); margin-top: 10px; font-size: 14px; padding: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+        /* Modal / Popup for Troll */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; padding: 20px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-content img { width: 100%; border-radius: 15px; margin-bottom: 15px; display: block; }
+        
+        .close-modal { background: #ef4444; margin-top: 10px; box-shadow: none; display: block; }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .folder-list { margin-top: 20px; text-align: left; }
+        .folder-item { 
+            display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); 
+            padding: 16px 20px; border-radius: 16px; margin-bottom: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); 
+        }
+        .folder-item h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .folder-item p { font-size: 12px; color: #94a3b8; }
+        
+        .qa-card { background: rgba(0, 0, 0, 0.4); padding: 18px; border-radius: 16px; margin-bottom: 15px; text-align: left; border-left: 4px solid #8b5cf6; }
+        .qa-card h4 { font-size: 13px; color: #cbd5e1; margin-bottom: 6px; font-weight: normal; }
+        .qa-card p { font-size: 15px; color: white; font-weight: 500; line-height: 1.5; }
+
+        .copyright { margin-top: 30px; font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 300; letter-spacing: 1px; }
+        .secret-login { display: inline-block; margin-top: 15px; font-size: 10px; color: rgba(255,255,255,0.1); cursor: pointer; }
+        #loading { display: none; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 14px; color: #f472b6; font-weight: bold; margin-top: 15px; }
+        .emoji { font-size: 50px; margin-bottom: 5px; }
+        
+        .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .back-btn { background: rgba(255,255,255,0.1); color: white; font-size: 14px; width: auto; padding: 8px 15px; border-radius: 10px; box-shadow: none;}
+        .delete-btn { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 12px; width: auto; padding: 8px 12px; border-radius: 10px; box-shadow: none;}
+    </style>
+</head>
+<body>
+    
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+
+    <div class="container">
+        
+        <!-- Screen 1: Welcome -->
+        <div id="screen-trap" class="screen active">
+            <div class="emoji">🤫</div>
+            <h1>Secret Space</h1>
+            <h2>Enth vennlum paranjo, aara paranje nne ariyan pattula 🙂‍↕️</h2>
+            <div class="warning-text">🔒 100% Anonymous. Ninte peru aarum ariyilla, dhairyamaayi enthum parayam! 🤞</div>
+            
+            <input type="text" id="victimName" placeholder="Enter your name or nickname" autocomplete="off">
+            <button onclick="goToQuestions()">Start 🚀</button>
+            <div class="copyright">© 2026 Crafted by Govind. All rights reserved.</div>
+            <div class="secret-login" onclick="showScreen('screen-admin-login')">ADMIN PORTAL</div>
+        </div>
+
+        <!-- Screen 2: Deep Questions -->
+        <div id="screen-questions" class="screen">
+            <h1>Secret Space 💭</h1>
+            <h2>No filters. Nobody knows who you are!</h2>
+            
+            <form id="confessionForm" onsubmit="submitForm(event)">
+                
+                <label class="question-label">1. Enne aadyam kandappol manassil thonniya karyam enthaayirunnu? 🤔</label>
+                <textarea id="q1" placeholder="..." required></textarea>
+
+                <label class="question-label">2. Ente swabhavathil ninakku ettavum ishtapetta karyam entha? ❤️</label>
+                <textarea id="q2" placeholder="..." required></textarea>
+
+                <label class="question-label">3. Ente swabhavathil maattanam ennu ninakku thonniya karyam entha? 🤬</label>
+                <textarea id="q3" placeholder="..." required></textarea>
+
+                <label class="question-label">4. Nammal onnichulla marakkan pattatha oru ormma (Memory)? ✨</label>
+                <textarea id="q4" placeholder="..." required></textarea>
+
+                <label class="question-label">5. Enik aarodengilum crush undennu thonnitundo? Undenkil aaraa? 👀</label>
+                <input type="text" id="q5" placeholder="..." required>
+
+                <label class="question-label">6. Ennodu vallathe deshyamo sankadamo thonniya oru nimisham? Eppol? 🥺</label>
+                <textarea id="q6" placeholder="..." required></textarea>
+
+                <!-- STAR RATING -->
+                <label class="question-label">7. Enikku nee ethra star rating tharum? (Out of 5) ⭐️</label>
+                <div class="rating-box" id="star-rating">
+                    <span class="star" data-val="1">★</span>
+                    <span class="star" data-val="2">★</span>
+                    <span class="star" data-val="3">★</span>
+                    <span class="star" data-val="4">★</span>
+                    <span class="star" data-val="5">★</span>
+                </div>
+                <input type="hidden" id="q7" value="0">
+
+                <label class="question-label">8. Ennodu ithuvare parayatha valla secret-um undo? 🤫</label>
+                <textarea id="q8" placeholder="..." required></textarea>
+
+                <label class="question-label">9. Oru divasam njan marichu poyal ninte reaction enthaayirikum? 🥺💔</label>
+                <textarea id="q9" placeholder="..." required></textarea>
+
+                <label class="question-label" style="color: #fcd34d;">10. Ithrem okke paranjathalle... 6282005931 ee number-ilekku oru 50 roopa GPay cheyyamo? 🥺 <span style="font-size: 11px; font-weight: normal; color: #94a3b8;">(Optional 😂)</span></label>
+                <input type="text" id="q10" placeholder="...">
+
+                <button type="submit" id="submitBtn">Send 💌</button>
+                <div id="loading">Sending message... ⏳</div>
+            </form>
+            <div class="copyright">© 2026 Crafted by Govind.</div>
+        </div>
+
+        <!-- Screen 3: Success with Instagram & WhatsApp -->
+        <div id="screen-success" class="screen">
+            <div class="emoji">🔥</div>
+            <h1 style="font-size: 26px;">Set aayi! Ayachittund</h1>
+            <h2>Message enikku kitti. Ithu aara ayachath ennu enikku oru pidiyum undavilla! 🤍</h2>
+            
+            <div class="promo-box">
+                <p>Enthylum vanne ahle follow akkite podo 🌝🫣 👇</p>
+                
+                <a href="https://www.instagram.com/ft.govinnd?srtk=MXhzamNrbW9nZDM1aw==" target="_blank" class="insta-btn">
+                    📸 Follow @ft.govinnd
+                </a>
+
+                <!-- Custom WhatsApp Link -->
+                <a href="https://wa.me/916282005931?text=Hi%20%F0%9F%A4%8D" target="_blank" class="wa-btn">
+                    💬 WhatsApp
+                </a>
+
+                <!-- The Troll Button -->
+                <button class="troll-btn" onclick="showTroll()">Ente crush aaraanu enn ariyano? 👀</button>
+
+                <!-- Optional Crush Note Box & Submit Button -->
+                <input type="text" id="crushNoteInput" placeholder="Egne und ente crush? (Optional)" style="margin-top: 15px; margin-bottom: 10px;" autocomplete="off">
+                <button class="submit-review-btn" onclick="submitCrushReview()">Submit Review 💬</button>
+                
+                <!-- Back to start screen button for writing another -->
+                <button onclick="resetToStart()" style="margin-top: 12px; background: rgba(255,255,255,0.08); font-size: 14px; padding: 10px; box-shadow:none;">Write Another Confession ✍️</button>
+            </div>
+
+            <div class="copyright" style="margin-top: 40px;">© 2026 Crafted by Govind. All rights reserved.</div>
+        </div>
+
+        <!-- The Crush Troll Modal Popup & Audio -->
+        <div id="trollModal" class="modal">
+            <div class="modal-content">
+                <!-- AUDIO FILE LINK -->
+                <audio id="trollAudio" src="https://ytterbic-green-9tomucyb.edgeone.dev" preload="auto"></audio>
+
+                <!-- Photo Link -->
+                <img id="trollImg" src="https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Trisha_Krishnan_at_PS1_pre_release_event_%283%29_%28cropped%29.jpg/960px-Trisha_Krishnan_at_PS1_pre_release_event_%283%29_%28cropped%29.jpg" alt="Crush">
+              
+                <button id="closeBtn" class="close-modal" onclick="closeTroll()">Close</button>
+            </div>
+        </div>
+
+        <!-- Screen 4: Admin Login -->
+        <div id="screen-admin-login" class="screen">
+            <div class="emoji">🕵️‍♂️</div>
+            <h1>Admin Panel</h1>
+            <input type="text" id="adminId" placeholder="Admin ID">
+            <input type="password" id="adminPass" placeholder="Password">
+            <button onclick="loginAdmin()">Reveal Secrets 🔓</button>
+            <div style="margin-top:20px; font-size:14px; color:#f472b6; cursor:pointer;" onclick="showScreen('screen-trap')">Cancel</div>
+        </div>
+
+        <!-- Screen 5: Admin Dashboard -->
+        <div id="screen-admin-dash" class="screen">
+            <h1>Inbox 📥</h1>
+            <h2 id="inbox-subtitle">Select a name to read secrets</h2>
+            
+            <div style="text-align: right; margin-bottom: 10px;">
+                <span onclick="clearAllData()" style="color: #ef4444; font-size: 13px; cursor: pointer; border-bottom: 1px solid #ef4444;">Clear All Data</span>
+            </div>
+
+            <div class="folder-list" id="confessionsList"></div>
+            <button onclick="logoutAdmin()" style="margin-top: 30px; background: rgba(255,255,255,0.1); box-shadow: none;">Log Out</button>
+        </div>
+
+        <!-- Screen 6: Admin Detail View -->
+        <div id="screen-admin-detail" class="screen">
+            <div class="detail-header">
+                <button class="back-btn" onclick="showScreen('screen-admin-dash')">❮ Back</button>
+                <div class="detail-title" id="detail-name" style="color:#f472b6; font-size: 18px; font-weight:700;">Name</div>
+                <button class="delete-btn" onclick="deleteCurrentConfession()">🗑 Delete</button>
+            </div>
+            <div id="detail-content"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // ⚠️ FIREBASE CONFIG ⚠️
+        // ==========================================
+        const firebaseConfig = {
+          apiKey: "AIzaSyAgFLLREpaoLfo_TAL0ZVbUmoulkBcTAjw",
+          authDomain: "love-36836.firebaseapp.com",
+          databaseURL: "https://love-36836-default-rtdb.firebaseio.com",
+          projectId: "love-36836",
+          storageBucket: "love-36836.firebasestorage.app",
+          messagingSenderId: "965348121531",
+          appId: "1:965348121531:web:b096a011a1a69bdff1029e",
+          measurementId: "G-D1H8VZ0J40"
+        };
+        // ==========================================
+        
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let currentVictim = "";
+        let allConfessions = [];
+        let currentConfessionId = "";
+        let lastFirebaseKey = ""; // Track last entry for updating crush review
+
+        window.onload = () => {
+            if(localStorage.getItem('isGovindAdmin') === 'true') {
+                loadFolders();
+                showScreen('screen-admin-dash');
+            }
+        };
+
+        const stars = document.querySelectorAll('.star');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                let value = this.getAttribute('data-val');
+                document.getElementById('q7').value = value;
+                stars.forEach(s => {
+                    if(s.getAttribute('data-val') <= value) s.classList.add('active');
+                    else s.classList.remove('active');
+                });
+            });
+        });
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function resetToStart() {
+            document.getElementById('victimName').value = "";
+            document.getElementById('confessionForm').reset();
+            document.getElementById('crushNoteInput').value = "";
+            document.getElementById('submitBtn').style.display = "block";
+            document.getElementById('loading').style.display = "none";
+            stars.forEach(s => s.classList.remove('active'));
+            document.getElementById('q7').value = "0";
+            showScreen('screen-trap');
+        }
+
+        // Direct Popup & Song Play Logic
+        function showTroll() {
+            const modal = document.getElementById('trollModal');
+            modal.style.display = 'flex';
+
+            const audio = document.getElementById('trollAudio');
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log("Audio play blocked"));
+        }
+
+        function closeTroll() {
+            document.getElementById('trollModal').style.display = 'none';
+            const audio = document.getElementById('trollAudio');
+            audio.pause();
+            audio.currentTime = 0;
+        }
+
+        function goToQuestions() {
+            const name = document.getElementById('victimName').value.trim();
+            if (name === "") return alert("Please enter your name!");
+            currentVictim = name;
+            showScreen('screen-questions');
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            
+            if(document.getElementById('q7').value == "0") {
+                alert("Rate me🫣🌝! ⭐️");
+                return;
+            }
+
+            document.getElementById('loading').style.display = "block";
+            document.getElementById('submitBtn').style.display = "none";
+
+            const data = {
+                name: currentVictim,
+                q1: document.getElementById('q1').value,
+                q2: document.getElementById('q2').value,
+                q3: document.getElementById('q3').value,
+                q4: document.getElementById('q4').value,
+                q5: document.getElementById('q5').value,
+                q6: document.getElementById('q6').value, 
+                q7: document.getElementById('q7').value, 
+                q8: document.getElementById('q8').value,
+                q9: document.getElementById('q9').value,
+                q10: document.getElementById('q10').value || "No reply 😂",
+                crushReview: "No comment added",
+                timestamp: new Date().toLocaleString()
+            };
+
+            const newRef = database.ref('confessions').push();
+            lastFirebaseKey = newRef.key;
+
+            newRef.set(data)
+            .then(() => {
+                document.getElementById('loading').style.display = "none";
+                showScreen('screen-success');
+            })
+            .catch((error) => {
+                alert("Error sending data! Check if Firebase config is correct.");
+                document.getElementById('loading').style.display = "none";
+                document.getElementById('submitBtn').style.display = "block";
+            });
+        }
+
+        function submitCrushReview() {
+            const comment = document.getElementById('crushNoteInput').value.trim();
+            if(!comment) {
+                alert("Please type something first! 😅");
+                return;
+            }
+
+            if(lastFirebaseKey) {
+                database.ref('confessions/' + lastFirebaseKey).update({
+                    crushReview: comment
+                }).then(() => {
+                    alert("Review Submitted Successfully! 🤍");
+                }).catch((err) => {
+                    alert("Failed to submit review.");
+                });
+            } else {
+                alert("Review saved locally!");
+            }
+        }
+
+        function loginAdmin() {
+            const id = document.getElementById('adminId').value;
+            const pass = document.getElementById('adminPass').value;
+
+            if (id === 'ft.govind' && pass === '1Govind@') {
+                localStorage.setItem('isGovindAdmin', 'true');
+                loadFolders();
+                showScreen('screen-admin-dash');
+            } else {
+                alert("dai dai nee admin alalo! 😒");
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('isGovindAdmin');
+            showScreen('screen-trap');
+        }
+
+        function loadFolders() {
+            const list = document.getElementById('confessionsList');
+            const subtitle = document.getElementById('inbox-subtitle');
+            list.innerHTML = "<p style='color: #f472b6; text-align:center;'>Fetching secrets... ⏳</p>";
+
+            database.ref('confessions').once('value', (snapshot) => {
+                const data = snapshot.val();
+                list.innerHTML = "";
+
+                if (!data) {
+                    list.innerHTML = "<p style='text-align:center; color: #94a3b8;'>Inbox is empty. Share your link! 😢</p>";
+                    subtitle.innerText = "No secrets yet";
+                    return;
+                }
+
+                allConfessions = Object.keys(data).map(key => {
+                    return { id: key, ...data[key] };
+                }).reverse();
+
+                subtitle.innerText = `${allConfessions.length} Secrets Found`;
+
+                allConfessions.forEach((c, index) => {
+                    let starIcons = '⭐️'.repeat(parseInt(c.q7) || 0);
+                    const item = document.createElement('div');
+                    item.className = 'folder-item';
+                    item.onclick = () => openDetail(index);
+                    
+                    item.innerHTML = `
+                        <div>
+                            <h3>${c.name} ${starIcons}</h3>
+                            <p>🕰️ ${c.timestamp}</p>
+                        </div>
+                        <div style="color:#f472b6; font-weight:bold; font-size:20px;">›</div>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        function openDetail(index) {
+            const data = allConfessions[index];
+            currentConfessionId = data.id;
+            
+            document.getElementById('detail-name').innerText = data.name;
+            let ratingStars = '⭐️'.repeat(parseInt(data.q7) || 0);
+
+            const content = document.getElementById('detail-content');
+            content.innerHTML = `
+                <div class="qa-card"><h4>1. First Impression</h4><p>${data.q1}</p></div>
+                <div class="qa-card"><h4>2. Best Thing</h4><p>${data.q2}</p></div>
+                <div class="qa-card"><h4>3. Thing to Change</h4><p>${data.q3}</p></div>
+                <div class="qa-card"><h4>4. Unforgettable Memory</h4><p>${data.q4}</p></div>
+                <div class="qa-card"><h4>5. Crush</h4><p>${data.q5}</p></div>
+                <div class="qa-card"><h4>6. Sad/Angry Moment</h4><p>${data.q6}</p></div>
+                <div class="qa-card" style="border-left-color: #fcd34d;">
+                    <h4 style="color: #fcd34d;">7. Rating</h4>
+                    <p style="font-size: 22px;">${ratingStars}</p>
+                </div>
+                <div class="qa-card"><h4>8. The Secret</h4><p>${data.q8}</p></div>
+                <div class="qa-card" style="border-left-color: #fcd34d;">
+                    <h4 style="color: #fcd34d;">9. If I Died Reaction</h4>
+                    <p>${data.q9}</p>
+                </div>
+                <div class="qa-card" style="border-left-color: #fcd34d;">
+                    <h4 style="color: #fcd34d;">10. GPay Request (50Rs)</h4>
+                    <p>${data.q10}</p>
+                </div>
+                <div class="qa-card" style="border-left-color: #ec4899;">
+                    <h4 style="color: #ec4899;">💬 Crush Review Note</h4>
+                    <p>${data.crushReview}</p>
+                </div>
+            `;
+            
+            showScreen('screen-admin-detail');
+        }
+
+        function deleteCurrentConfession() {
+            if(confirm("Are you sure you want to delete this secret forever?")) {
+                database.ref('confessions/' + currentConfessionId).remove()
+                .then(() => {
+                    alert("Deleted Successfully!");
+                    loadFolders();
+                    showScreen('screen-admin-dash');
+                })
+                .catch((error) => {
+                    alert("Delete failed! " + error.message);
+                });
+            }
+        }
+
+        function clearAllData() {
+            if(confirm("DANGER: Are you sure you want to clear the entire Inbox? This cannot be undone!")) {
+                database.ref('confessions').remove()
+                .then(() => {
+                    loadFolders();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
